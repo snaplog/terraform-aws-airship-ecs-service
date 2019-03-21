@@ -1,4 +1,4 @@
-output "aws_ecs_task_definition_arn" {
+output "ecs_task_definition_arn" {
   value = "${module.ecs_task_definition.aws_ecs_task_definition_arn}"
 }
 
