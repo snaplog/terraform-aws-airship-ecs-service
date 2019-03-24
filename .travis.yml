@@ -2,7 +2,7 @@ language: bash
 
 env:
   global:
-    - TERRAFORM_VERSION=0.11.11
+    - TERRAFORM_VERSION=0.11.13
 
 sudo: required
 
@@ -17,7 +17,15 @@ script:
   - docker run --rm -v $(pwd):/data --workdir=/data -t hashicorp/terraform:$TERRAFORM_VERSION validate -check-variables=false
   - docker run --rm -v $(pwd):/data --workdir=/data -t hashicorp/terraform:$TERRAFORM_VERSION fmt -write=false -diff=true -check=true
   - docker run --rm -v $(pwd):/data --workdir=/data -t hashicorp/terraform:$TERRAFORM_VERSION get
-    # tflint chokes when trying to check our syntax because of this issue: https://github.com/wata727/tflint/issues/204
-    # specifically, it's currently unable to parse the construct we have at https://github.com/blinkist/terraform-aws-airship-ecs-service/blob/85dc02a8b0a1def86186d46167ace55d7375f13b/main.tf#L204
-    # fixing it is pretty involved and the author plans to rip out the parsing in favour of terraform's anyway. so for now, just disable it.
-#  - docker run --rm -v $(pwd):/data --workdir=/data -t wata727/tflint:0.5.1 --error-with-issues
+
+after_script:
+  - |
+    if [ "$TRAVIS_BRANCH" == "master" ] ; then
+      if git diff --name-only $TRAVIS_COMMIT_RANGE airship.tf | grep -qE '(\.md$)|(\.rst$)'
+      then
+        echo "There appear to be docs in this commit. Thank you.!"
+        curl -LO https://raw.github.com/maartenvanderhoef/travis-dependent-builds/master/trigger.sh
+        chmod +x trigger.sh
+        ./trigger.sh stephanmg downstream master $TRAVIS_ACCESS_TOKEN
+      fi
+    fi
