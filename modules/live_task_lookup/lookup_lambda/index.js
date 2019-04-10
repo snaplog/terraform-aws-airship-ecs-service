@@ -1,3 +1,4 @@
+/*jshint esversion: 8 */
 const AWS = require('aws-sdk');
 const ecs = new AWS.ECS();
 
@@ -15,6 +16,7 @@ exports.handler = async (event) => {
   function AirshipLambdaError(message) {
     this.name = "AirshipLambdaError";
     this.message = message;
+    this.stack = (new Error()).stack;
   }
   AirshipLambdaError.prototype = new Error();
 
@@ -32,10 +34,10 @@ exports.handler = async (event) => {
   // Throw an error when the lookup returns more than one service
   // Return empty definitions in case no services have been found
   if (res.services.length > 1) {
-    const error = new AirshipLambdaError("multiple services with name %s found in cluster %s" % event.ecs_service, event.ecs_cluster);
+    const error = new AirshipLambdaError(`multiple services with name ${event.ecs_service} found in cluster ${event.ecs_cluster}`);
     throw error;
   } else if (res.services.length < 1) {
-    console.log("Could not find service, returning empty map")
+    console.log("Could not find service, returning empty map");
     return returnMap;
   }
 
@@ -60,16 +62,9 @@ exports.handler = async (event) => {
   });
 
   if ( containerDefinitions.length != 1 ){
-    const error = new AirshipLambdaError("Could not find container definition: %s" % event.ecs_task_container_name );
+    const error = new AirshipLambdaError(`Could not find container definition: ${event.ecs_task_container_name}` );
     throw error;
   }
-
-  // Populating the map for return
-  returnMap['task_revision'] = String(resTask.taskDefinition.revision);
-  returnMap['image'] = String(containerDefinitions[0].image);
-  returnMap['memory_reservation'] = String(containerDefinitions[0].memoryReservation);
-  returnMap['cpu'] = String(containerDefinitions[0].cpu);
-  returnMap['memory'] =  String(containerDefinitions[0].memory);
 
   var envDict = {};
   containerDefinitions[0].environment.forEach(function(element) {
@@ -77,8 +72,15 @@ exports.handler = async (event) => {
     envDict[String(element.name)] = ( String(element.value) == "true" ? "1" : String(element.value) ) ;
   });
 
-  returnMap['environment'] = JSON.stringify(envDict,Object.keys(envDict).sort());
-  console.log("Successfully returning populated map")
-  console.log(returnMap)
+  // Populating the map for return
+  returnMap.task_revision = String(resTask.taskDefinition.revision);
+  returnMap.image = String(containerDefinitions[0].image);
+  returnMap.memory_reservation = String(containerDefinitions[0].memoryReservation);
+  returnMap.cpu = String(containerDefinitions[0].cpu);
+  returnMap.memory =  String(containerDefinitions[0].memory);
+  returnMap.environment = JSON.stringify(envDict,Object.keys(envDict).sort());
+
+  console.log("Successfully returning populated map");
+  console.log(returnMap);
   return returnMap;
 };
