@@ -17,6 +17,15 @@ resource "null_resource" "envvars_as_list_of_maps" {
   )}"
 }
 
+resource "null_resource" "secrets_as_list_of_maps" {
+  count = "${length(keys(var.container_secrets))}"
+
+  triggers = "${map(
+    "name", "${local.safe_search_replace_string}${element(keys(var.container_secrets), count.index)}",
+    "valueFrom", "${local.safe_search_replace_string}${element(values(var.container_secrets), count.index)}",
+  )}"
+}
+
 locals {
   port_mappings = {
     with_port = [
@@ -43,11 +52,13 @@ locals {
     command                = "${var.container_command}"
     workingDirectory       = "${var.working_directory}"
     readonlyRootFilesystem = "${var.readonly_root_filesystem}"
+    dockerLabels           = "${local.docker_labels}"
 
     privileged = "${var.privileged}"
 
     hostname     = "${var.hostname}"
     environment  = ["${null_resource.envvars_as_list_of_maps.*.triggers}"]
+    secrets      = ["${null_resource.secrets_as_list_of_maps.*.triggers}"]
     mountPoints  = ["${var.mountpoints}"]
     portMappings = "${local.port_mappings[local.use_port]}"
     healthCheck  = "${var.healthcheck}"

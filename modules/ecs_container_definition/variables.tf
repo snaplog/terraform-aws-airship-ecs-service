@@ -75,6 +75,16 @@ variable "container_envvars" {
   default     = {}
 }
 
+variable "container_secrets" {
+  description = <<EOF
+    The environment variables to pass to the container as SSM keys. 
+    The keys will be looked up and the resulting values will be passed to the environment variable.
+    This is a map
+  EOF
+
+  default = {}
+}
+
 variable "readonly_root_filesystem" {
   description = "Determines whether a container is given read-only access to its root filesystem. Due to how Terraform type casts booleans in json it is required to double quote this value."
   default     = "false"
@@ -133,9 +143,19 @@ locals {
     }
   }
 
+  # Secrets aren't trackable by the live_task_loop (thanks AWS!), so we store a hash of them as a synthetic Docker label on the container.
+  secrets_merge = {
+    "0" = {}
+
+    "1" = {
+      _airship_secrets_hash = "${md5(jsonencode(var.container_secrets))}"
+    }
+  }
+
   docker_labels = "${merge(
      var.container_docker_labels,
-     local.docker_label_merge[signum(length(var.container_docker_labels))])}"
+     local.docker_label_merge[signum(length(var.container_docker_labels))],
+     local.secrets_merge[signum(length(var.container_secrets))])}"
 }
 
 variable "tags" {

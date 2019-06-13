@@ -16,7 +16,8 @@ data "aws_security_group" "selected" {
 }
 
 module "ecs_cluster" {
-  source = "git::git@github.com:blinkist/terraform-aws-airship-ecs-cluster.git?ref=master"
+  source  = "blinkist/airship-ecs-cluster/aws"
+  version = "~> 0.5"
 
   name = "${terraform.workspace}-cluster"
 
@@ -57,40 +58,13 @@ resource "aws_route53_zone" "this" {
   name = "some.zonename.com"
 }
 
-resource "aws_security_group_rule" "allow_all" {
-  type              = "ingress"
-  from_port         = "${var.echo_port}"
-  to_port           = "${var.echo_port}"
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "${data.aws_security_group.selected.id}"
-}
-
-data "aws_network_interface" "nlb" {
-  depends_on = ["aws_lb.this"]
-
-  filter = {
-    name   = "subnet-id"
-    values = ["${data.aws_subnet.selected.id}"]
-  }
-}
-
-resource "aws_security_group_rule" "allow_ecs" {
-  type              = "ingress"
-  from_port         = "32768"
-  to_port           = "65535"
-  protocol          = "tcp"
-  cidr_blocks       = ["${formatlist("%s/32",sort(distinct(compact(concat(list(""),data.aws_network_interface.nlb.private_ips)))))}"]
-  security_group_id = "${data.aws_security_group.selected.id}"
-}
-
 data "http" "icanhazip" {
   url = "http://ipv4.icanhazip.com"
 }
 
 resource "aws_security_group_rule" "allow_user" {
   type              = "ingress"
-  from_port         = "32768"
+  from_port         = "0"
   to_port           = "65535"
   protocol          = "tcp"
   cidr_blocks       = ["${format("%s/%s",trimspace(data.http.icanhazip.body), "32")}"]
@@ -154,18 +128,16 @@ module "nlb_service" {
   # load_balancing_type is either "none", "network","application"
   load_balancing_type = "network"
 
-  lb_arn = "${aws_lb.this.arn}"
-
-  cognito_auth_enabled = false
-  route53_record_type  = "ALIAS"
-
   ## load_balancing_properties map defines the map for services hooked to a load balancer
   load_balancing_properties_route53_zone_id      = "${aws_route53_zone.this.zone_id}"
-  load_balancing_properties_route53_name         = "service-web"
+  load_balancing_properties_route53_custom_name  = "service-web"
   load_balancing_properties_lb_vpc_id            = "${data.aws_vpc.selected.id}"
   load_balancing_properties_target_group_port    = "${var.echo_port}"
   load_balancing_properties_nlb_listener_port    = "${var.echo_port}"
   load_balancing_properties_deregistration_delay = 0
+  load_balancing_properties_lb_arn               = "${aws_lb.this.arn}"
+  load_balancing_properties_cognito_auth_enabled = false
+  load_balancing_properties_route53_record_type  = "ALIAS"
 
   # deployment_controller_type sets the deployment type
   # ECS for Rolling update, and CODE_DEPLOY for Blue/Green deployment via CodeDeploy
@@ -183,7 +155,7 @@ module "nlb_service" {
 }
 
 # Test that create false works
-module "nlb_service" {
+module "nlb_service_ignored" {
   source = "../../"
 
   create = false
@@ -221,25 +193,22 @@ module "nlb_service" {
   # load_balancing_type is either "none", "network","application"
   load_balancing_type = "network"
 
-  lb_arn = "${aws_lb.this.arn}"
-
-  cognito_auth_enabled = false
-  route53_record_type  = "ALIAS"
-
   ## load_balancing_properties map defines the map for services hooked to a load balancer
   load_balancing_properties_route53_zone_id      = "${aws_route53_zone.this.zone_id}"
-  load_balancing_properties_route53_name         = "service-web"
+  load_balancing_properties_route53_custom_name  = "service-web"
   load_balancing_properties_lb_vpc_id            = "${data.aws_vpc.selected.id}"
   load_balancing_properties_target_group_port    = "${var.echo_port}"
   load_balancing_properties_nlb_listener_port    = "${var.echo_port}"
   load_balancing_properties_deregistration_delay = 0
+  load_balancing_properties_lb_arn               = "${aws_lb.this.arn}"
+  load_balancing_properties_cognito_auth_enabled = false
+  load_balancing_properties_route53_record_type  = "ALIAS"
 
   # deployment_controller_type sets the deployment type
   # ECS for Rolling update, and CODE_DEPLOY for Blue/Green deployment via CodeDeploy
   deployment_controller_type = "ECS"
 
   ## capacity_properties map defines the capacity properties of the service
-  capacity_properties             = {}
   force_bootstrap_container_image = "false"
 
   # Whether to provide access to the supplied kms_keys. If no kms keys are

@@ -19,6 +19,11 @@ variable "fargate_enabled" {
   default     = false
 }
 
+variable "container_secrets_enabled" {
+  description = "true, if the container uses secrets and needs a task execution role to get access to them"
+  default     = false
+}
+
 variable "awsvpc_enabled" {
   default     = false
   description = "With awsvpc_enabled the network_mode for the ECS task definition will be awsvpc, defaults to bridge"
@@ -305,6 +310,24 @@ variable "container_envvars" {
 container_envvars defines extra container env vars, list of maps:
 { key = val,key2= val2}
   EOF
+
+  default = {}
+}
+
+variable "container_secrets" {
+  description = <<EOF
+The environment variables to pass to the container as SSM keys.  Should be a map of environment vairable names to either SSM var ANRs or paths.
+Example:
+```hcl
+container_secrets_enabled = true
+container_secrets = {
+  DB_USER     = "${data.aws_ssm_parameter.username.arn}"
+  DB_PASSWORD = "/myapp/dev/db.password"
+}
+ssm_enabled = true
+ssm_paths   = ["myapp/dev"]
+```
+EOF
 
   default = {}
 }

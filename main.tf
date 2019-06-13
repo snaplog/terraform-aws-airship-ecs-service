@@ -49,6 +49,9 @@ module "iam" {
 
   # In case Fargate is enabled an extra role needs to be added
   fargate_enabled = "${var.fargate_enabled}"
+
+  # The container uses secrets and needs a task execution role to get access to them
+  container_secrets_enabled = "${var.container_secrets_enabled}"
 }
 
 #
@@ -184,6 +187,7 @@ module "container_definition" {
   hostname = "${var.awsvpc_enabled == 1 ? "" : var.name}"
 
   container_envvars = "${var.container_envvars}"
+  container_secrets = "${var.container_secrets}"
 
   container_docker_labels = "${var.container_docker_labels}"
 
@@ -269,6 +273,7 @@ module "ecs_task_definition_selector" {
   live_aws_ecs_task_definition_memory_reservation = "${module.live_task_lookup.memory_reservation}"
   live_aws_ecs_task_definition_environment_json   = "${module.live_task_lookup.environment_json}"
   live_aws_ecs_task_definition_docker_label_hash  = "${module.live_task_lookup.docker_label_hash}"
+  live_aws_ecs_task_definition_secrets_hash       = "${module.live_task_lookup.secrets_hash}"
 }
 
 #
