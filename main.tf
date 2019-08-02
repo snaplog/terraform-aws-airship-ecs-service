@@ -181,6 +181,8 @@ module "container_definition" {
   container_memory             = "${var.container_memory}"
   container_memory_reservation = "${var.container_memory_reservation}"
 
+  container_init_process_enabled = "${var.container_init_process_enabled}"
+
   container_port = "${var.container_port}"
   host_port      = "${var.awsvpc_enabled ? var.container_port : var.host_port }"
 
@@ -188,6 +190,8 @@ module "container_definition" {
 
   container_envvars = "${var.container_envvars}"
   container_secrets = "${var.container_secrets}"
+
+  repository_credentials_secret_arn = "${var.repository_credentials_secret_arn}"
 
   container_docker_labels = "${var.container_docker_labels}"
 

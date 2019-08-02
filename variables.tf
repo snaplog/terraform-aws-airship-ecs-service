@@ -24,6 +24,11 @@ variable "container_secrets_enabled" {
   default     = false
 }
 
+variable "container_init_process_enabled" {
+  description = "Should the container be run with initProcessEnabled (--init)"
+  default     = false
+}
+
 variable "awsvpc_enabled" {
   default     = false
   description = "With awsvpc_enabled the network_mode for the ECS task definition will be awsvpc, defaults to bridge"
@@ -505,4 +510,10 @@ variable "tags" {
 variable "health_check_grace_period_seconds" {
   description = "The amount of seconds to wait before the first health check. Only relevant for load balanced apps. Default 5 minutes"
   default     = 300
+}
+
+variable "repository_credentials_secret_arn" {
+  description = "ARN of Docker private registry credentials stored in secrets manager"
+  type        = "string"
+  default     = ""
 }
