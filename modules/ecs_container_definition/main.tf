@@ -1,30 +1,18 @@
-#
-# This code was adapted from the `terraform-aws-ecs-container-definition` module from Cloud Posse, LLC on 2018-09-18.
-# Available here: https://github.com/cloudposse/terraform-aws-ecs-container-definition
-#
-
 locals {
-  # null_resource turns "true" into true, adding a temporary string will fix that problem
-  safe_search_replace_string = "#keep_true_a_string_hack#"
+
+  envvars_as_list_of_maps = flatten([
+     for key in keys(var.container_envvars) : {
+       name   = key
+       value = var.container_envvars[key]
+   }])
+
+  secrets_as_list_of_maps = flatten([
+     for key in keys(var.container_secrets) : {
+       name   = key
+       valueFrom = var.container_secrets[key]
+   }])
 }
 
-resource "null_resource" "envvars_as_list_of_maps" {
-  count = "${length(keys(var.container_envvars))}"
-
-  triggers = "${map(
-    "name", "${local.safe_search_replace_string}${element(keys(var.container_envvars), count.index)}",
-    "value", "${local.safe_search_replace_string}${element(values(var.container_envvars), count.index)}",
-  )}"
-}
-
-resource "null_resource" "secrets_as_list_of_maps" {
-  count = "${length(keys(var.container_secrets))}"
-
-  triggers = "${map(
-    "name", "${local.safe_search_replace_string}${element(keys(var.container_secrets), count.index)}",
-    "valueFrom", "${local.safe_search_replace_string}${element(values(var.container_secrets), count.index)}",
-  )}"
-}
 
 locals {
   port_mappings = {
@@ -57,8 +45,8 @@ locals {
     privileged = "${var.privileged}"
 
     hostname     = "${var.hostname}"
-    environment  = ["${null_resource.envvars_as_list_of_maps.*.triggers}"]
-    secrets      = ["${null_resource.secrets_as_list_of_maps.*.triggers}"]
+    environment  = local.envvars_as_list_of_maps
+    secrets      = secrets_as_list_of_maps
     mountPoints  = ["${var.mountpoints}"]
     portMappings = "${local.port_mappings[local.use_port]}"
     healthCheck  = "${var.healthcheck}"
