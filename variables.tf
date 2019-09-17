@@ -559,3 +559,8 @@ variable "scheduled_task_count" {
   description = "The number of tasks to create based on the TaskDefinition"
   default     = 1
 }
+
+variable "scheduled_task_name" {
+  description = "The name of the scheduled_task event rule. If blank, this defaults to var.name".
+  default     = ""
+}
