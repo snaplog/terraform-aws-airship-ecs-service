@@ -579,5 +579,5 @@ variable "scheduled_task_name" {
 variable "lambda_ecs_task_scheduler_runtime" {
   description = "Runtime version of ecs task scheduler lambda"
   type        = "string"
-  default     = "nodejs10.x"
+  default     = "nodejs12.x"
 }
