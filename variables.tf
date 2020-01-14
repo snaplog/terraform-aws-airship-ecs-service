@@ -232,7 +232,7 @@ EOF
 variable "live_task_lookup_lambda_runtime" {
   description = "Runtime version of live task lookup lambda"
   type        = "string"
-  default     = "nodejs10.x"
+  default     = "nodejs12.x"
 }
 
 variable "bootstrap_container_image" {
