@@ -232,7 +232,7 @@ EOF
 variable "live_task_lookup_lambda_runtime" {
   description = "Runtime version of live task lookup lambda"
   type        = "string"
-  default     = "nodejs8.10"
+  default     = "nodejs10.x"
 }
 
 variable "bootstrap_container_image" {
@@ -579,5 +579,5 @@ variable "scheduled_task_name" {
 variable "lambda_ecs_task_scheduler_runtime" {
   description = "Runtime version of ecs task scheduler lambda"
   type        = "string"
-  default     = "nodejs8.10"
+  default     = "nodejs10.x"
 }
