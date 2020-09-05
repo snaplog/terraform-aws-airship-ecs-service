@@ -314,7 +314,7 @@ module "ecs_task_definition_selector" {
   ecs_container_name = var.container_name
 
   # Terraform state task definition
-  aws_ecs_task_definition_family   = "${local.ecs_cluster_name}-${var.name}"
+  aws_ecs_task_definition_family   = module.ecs_task_definition.aws_ecs_task_definition_family
   aws_ecs_task_definition_revision = module.ecs_task_definition.aws_ecs_task_definition_revision
 
   # Live ecs task definition
