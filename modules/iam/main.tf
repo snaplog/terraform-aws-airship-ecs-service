@@ -132,7 +132,7 @@ resource "aws_iam_role_policy" "ssm_permissions_execution" {
 
 # Policy document allowing access to the repository credentials secret
 data "aws_iam_policy_document" "sm_secrets" {
-  count = var.secretsmanager_enabled && length(var.secretsmanager_secret_arns) > 0 ? 1 : 0
+  count = var.secretsmanager_enabled ? 1 : 0
 
   statement {
     effect    = "Allow"
@@ -142,7 +142,7 @@ data "aws_iam_policy_document" "sm_secrets" {
 }
 
 resource "aws_iam_role_policy" "sm_secrets" {
-  count  = var.secretsmanager_enabled && length(var.secretsmanager_secret_arns) > 0 ? 1 : 0
+  count  = var.secretsmanager_enabled ? 1 : 0
   name   = "${var.name}-secretsmanager-permissions"
   role   = aws_iam_role.ecs_task_execution_role[0].id
   policy = data.aws_iam_policy_document.sm_secrets[0].json
