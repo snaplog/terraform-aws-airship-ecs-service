@@ -645,3 +645,7 @@ variable "lambda_ecs_task_scheduler_runtime" {
   default     = "nodejs12.x"
 }
 
+variable "blue_green_deployment" {
+  type = bool
+  default = false
+}
