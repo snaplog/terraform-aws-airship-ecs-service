@@ -14,7 +14,6 @@ output "lb_target_group_test_arn" {
   value = module.alb_handling.lb_target_group_test_arn
 }
 
-
 output "task_execution_role_arn" {
   value = module.iam.ecs_task_execution_role_arn
 }

@@ -174,6 +174,8 @@ module "alb_handling" {
 
   # Propagate tags to ALB resources
   tags = local.tags
+
+  blue_green_deployment = var.blue_green_deployment
 }
 
 ###### CloudWatch Logs
