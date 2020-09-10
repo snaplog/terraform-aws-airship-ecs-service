@@ -102,8 +102,8 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_target_group" "service_test" {
-  count                = var.create && var.load_balancing_type == "application" && var.blue_green_deployment ? 1 : 0
-  name                 = local.tg_name
+  count                = var.create && var.load_balancing_type == "application" && var.blue_green_deployment == true ? 1 : 0
+  name                 = "${local.tg_name}-test"
   port                 = var.target_group_port
   protocol             = "HTTP"
   vpc_id               = var.lb_vpc_id
