@@ -179,3 +179,7 @@ locals {
   tags = merge(var.tags, local.name_map)
 }
 
+variable "blue_green_deployment" {
+  type = bool
+  default = false
+}

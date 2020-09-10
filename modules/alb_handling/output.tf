@@ -19,3 +19,12 @@ output "aws_lb_listener_rules" {
   )
 }
 
+output "lb_target_group_test_arn" {
+  value = element(
+    concat(
+      aws_lb_target_group.service_test.*.arn
+      [""],
+    ),
+    0,
+  )
+}
