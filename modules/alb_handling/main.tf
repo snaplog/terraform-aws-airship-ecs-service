@@ -102,22 +102,31 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_target_group" "service_test" {
-  count                = var.create && var.load_balancing_type == "application" && var.blue_green_deployment == true ? 1 : 0
-  name                 = "${local.tg_name}-test"
-  port                 = var.target_group_port
-  protocol             = "HTTP"
-  vpc_id               = var.lb_vpc_id
-  target_type          = var.target_type
-  deregistration_delay = var.deregistration_delay
-
-  health_check {
-    matcher             = var.health_matcher
-    path                = var.health_uri
-    unhealthy_threshold = var.unhealthy_threshold
-    healthy_threshold   = var.healthy_threshold
-    port                = var.health_port
-  }
+   count      = var.create && var.load_balancing_type == "application" && var.blue_green_deployment == true ? 1 : 0
+  name        = "${local.tg_name}-test"
+  vpc_id      = var.lb_vpc_id
+  port        = var.target_group_port
+  protocol    = "HTTP"
+  target_type = "ip" 
 }
+
+# resource "aws_lb_target_group" "service_test" {
+#   count                = var.create && var.load_balancing_type == "application" && var.blue_green_deployment == true ? 1 : 0
+#   name                 = "${local.tg_name}-test"
+#   port                 = var.target_group_port
+#   protocol             = "HTTP"
+#   vpc_id               = var.lb_vpc_id
+#   target_type          = var.target_type
+#   deregistration_delay = var.deregistration_delay
+
+#   health_check {
+#     matcher             = var.health_matcher
+#     path                = var.health_uri
+#     unhealthy_threshold = var.unhealthy_threshold
+#     healthy_threshold   = var.healthy_threshold
+#     port                = var.health_port
+#   }
+# }
 
 ##
 ## An aws_lb_listener_rule will only be created when a service has a load balancer attached
