@@ -11,13 +11,13 @@ locals {
     for key in keys(var.container_envvars) : {
       name  = key
       value = var.container_envvars[key]
-    }])
+  }])
 
   secrets_as_list_of_maps = flatten([
     for key in keys(var.container_secrets) : {
       name      = key
       valueFrom = var.container_secrets[key]
-    }])
+  }])
 
 
   port_mappings = {
@@ -27,7 +27,7 @@ locals {
         hostPort      = var.host_port
         protocol      = var.protocol
       }],
-      var.extra_ports)
+    var.extra_ports)
     without_port = []
   }
 
@@ -56,20 +56,20 @@ locals {
   # var.healthcheck_cmd can be either a string (to be passed to a
   # shell) or a list of strings to be executed directly. Terraform
   # makes this a little tricky.
-  healthcheck_sh   = (
+  healthcheck_sh = (
     var.healthcheck_cmd != null
     ? try(concat(["CMD-SHELL"], [tostring(var.healthcheck_cmd)]), null)
-    : null)
+  : null)
   healthcheck_list = (
     var.healthcheck_cmd != null
     ? try(concat(["CMD"], tolist(var.healthcheck_cmd)), null)
-    : null)
+  : null)
   # If healthcheck_cmd is non-null, exactly one of healthcheck_sh and
   # healthcheck_list will also be.
-  healthcheck_cmd_arg  = (
+  healthcheck_cmd_arg = (
     var.healthcheck_cmd != null
     ? coalesce(tolist(local.healthcheck_sh), tolist(local.healthcheck_list))
-    : null)
+  : null)
 
   healthcheck_opts = (
     local.healthcheck_cmd_arg != null
@@ -80,7 +80,7 @@ locals {
       startPeriod = lookup(var.healthcheck_timings, "startPeriod", null),
       timeout     = lookup(var.healthcheck_timings, "timeout", null),
     }
-    : null)
+  : null)
 
   container_definitions = [
     {

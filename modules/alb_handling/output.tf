@@ -41,7 +41,7 @@ output "lb_target_group_name" {
 }
 
 output "lb_target_group_green_name" {
- value = element(
+  value = element(
     concat(
       aws_lb_target_group.service_green.*.name,
       [""],

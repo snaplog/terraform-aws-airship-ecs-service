@@ -339,7 +339,7 @@ variable "host_port" {
 
 variable "extra_ports" {
   description = "Port mappings to apply besides the default"
-  default = []
+  default     = []
 }
 
 variable "scaling_properties" {
@@ -646,6 +646,6 @@ variable "lambda_ecs_task_scheduler_runtime" {
 }
 
 variable "blue_green_deployment" {
-  type = bool
+  type    = bool
   default = false
 }

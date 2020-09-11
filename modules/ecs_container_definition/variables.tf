@@ -28,7 +28,7 @@ variable "container_port" {
 
 variable "extra_ports" {
   description = "Port mappings to apply besides the default"
-  default = []
+  default     = []
 }
 
 variable "container_init_process_enabled" {

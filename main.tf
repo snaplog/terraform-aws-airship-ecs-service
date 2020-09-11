@@ -18,8 +18,8 @@ locals {
 #
 locals {
   # ARNs for any Secrets Manager secrets used for container secrets
-  config_secret_arns = flatten([for val in values(var.container_secrets):
-                                regexall("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]+:secret:.+", val)])
+  config_secret_arns = flatten([for val in values(var.container_secrets) :
+  regexall("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]+:secret:.+", val)])
   # above plus the credentials secret ARN, if any
   secret_arns = compact(flatten(concat(local.config_secret_arns, [var.repository_credentials_secret_arn])))
 }
@@ -339,7 +339,7 @@ module "ecs_service" {
   name = var.name
 
   # create defines if resources are being created inside this module
-  create = var.create && !var.is_scheduled_task
+  create = var.create && ! var.is_scheduled_task
 
   cluster_id = var.ecs_cluster_id
 

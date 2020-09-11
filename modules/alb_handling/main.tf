@@ -136,10 +136,10 @@ resource "aws_lb_listener_rule" "host_based_routing" {
 
   condition {
     host_header {
-      values = [local.route53_record_type == "CNAME" ? 
-        join("",aws_route53_record.record.*.fqdn)
+      values = [local.route53_record_type == "CNAME" ?
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -164,9 +164,9 @@ resource "aws_lb_listener_rule" "host_based_routing_redirect_to_https" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -187,9 +187,9 @@ resource "aws_lb_listener_rule" "host_based_routing_ssl" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }
@@ -220,9 +220,9 @@ resource "aws_lb_listener_rule" "host_based_routing_ssl_cognito_auth" {
   condition {
     host_header {
       values = [local.route53_record_type == "CNAME" ?
-        join("",aws_route53_record.record.*.fqdn)
+        join("", aws_route53_record.record.*.fqdn)
         :
-        join("",aws_route53_record.record_alias_a.*.fqdn)
+        join("", aws_route53_record.record_alias_a.*.fqdn)
       ]
     }
   }

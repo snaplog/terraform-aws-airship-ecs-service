@@ -10,8 +10,16 @@ output "lb_target_group_arn" {
   value = module.alb_handling.lb_target_group_arn
 }
 
-output "lb_target_group_test_arn" {
-  value = module.alb_handling.lb_target_group_test_arn
+output "lb_target_group_green_arn" {
+  value = module.alb_handling.lb_target_group_green_arn
+}
+
+output "lb_target_group_name" {
+  value = module.alb_handling.lb_target_group_name
+}
+
+output "lb_target_group_green_name" {
+  value = module.alb_handling.lb_target_group_green_name
 }
 
 output "task_execution_role_arn" {
