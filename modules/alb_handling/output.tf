@@ -19,10 +19,31 @@ output "aws_lb_listener_rules" {
   )
 }
 
-output "lb_target_group_test_arn" {
+output "lb_target_group_green_arn" {
   value = element(
     concat(
-      aws_lb_target_group.service_test.*.arn,
+      aws_lb_target_group.service_green.*.arn,
+      [""],
+    ),
+    0,
+  )
+}
+
+output "lb_target_group_name" {
+  value = element(
+    concat(
+      aws_lb_target_group.service.*.name,
+      aws_lb_target_group.service_nlb.*.name,
+      [""],
+    ),
+    0,
+  )
+}
+
+output "lb_target_group_green_name" {
+ value = element(
+    concat(
+      aws_lb_target_group.service_green.*.name,
       [""],
     ),
     0,
